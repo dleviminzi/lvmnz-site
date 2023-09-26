@@ -1,0 +1,17 @@
+{{define "BlogPost"}}
+<li hx-get="/blog/{{.LinkTitle}}_{{.Date}}" hx-swap="outerHTML" hx-target="#content" hx-push-url="/blog/{{.LinkTitle}}_{{.Date}}">
+  {{.DisplayTitle}} - {{.Date}}
+</li>
+{{end}} 
+{{define "Blog"}}
+<ul id="Blog">
+  {{range .Posts}} {{template "BlogPost" .}} {{end}}
+</ul>
+{{end}}
+
+<div id="content">
+{{template "header.html" .}}
+  <h1>Welcome to Blog Page</h1>
+  {{template "Blog" .}}
+{{template "footer.html" .}}
+</div>

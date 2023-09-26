@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>lvmnz.com</title>
+    <script src="/static/htmx.min.js"></script>
+  </head>
+  <body>
+    <header>
+      <h1><a href="/">Daniel Levi-Minzi</a></h1>
+    </header>
+    <aside>
+      <ul>
+        <li><a href="/" hx-get="/about" hx-target="#content" hx-swap="outerHTML" hx-push-url="/">About</a></li>
+        <li><a href="/blog/" hx-get="/blog/" hx-target="#content" hx-swap="outerHTML" hx-push-url="/blog/">Blog</a></li>
+        <!-- <li><a href="/pictures">Pictures</a></li> -->
+      </ul>
+    </aside>
+    <main>
