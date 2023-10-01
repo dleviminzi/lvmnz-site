@@ -1,0 +1,22 @@
+{{template "header.html" .}}
+<div id="content">
+  {{template "nav.html" .}}
+  <main>
+    <div class="lg:grid lg:grid-cols-12 lg:gap-4 overflow-y-auto">
+      {{range .Photos}}
+      <div class="lg:col-start-2 lg:col-span-11 lg:flex lg:items-center lg:py-10">
+        <div class="flex-none">
+          <p class="whitespace-nowrap font-semibold text-xl">{{.Name}}</p>
+          <p class="italic">{{.Date}}</p>
+        </div>
+        <div class="lg:flex-grow lg:flex lg:items-center lg:justify-center">
+          <img class="transition-all lg:max-h-[50rem] lg:px-24 lg:hover:px-6 lg:hover:max-h-[55rem]" src="{{.Source}}" alt="Photo: {{.Name}}" />
+        </div>
+      </div>
+      {{else}}
+      <p>No images found.</p>
+      {{end}}
+    </div>
+  </main>
+</div>
+{{template "footer.html" .}}

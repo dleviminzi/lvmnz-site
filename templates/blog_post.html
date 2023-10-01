@@ -1,5 +1,6 @@
-<div id="content">
 {{template "header.html" .}}
-  {{.Content}}
-{{template "footer.html" .}}
+<div id="content">
+  {{template "nav.html" .}}
+  <article class="prose lg:prose-xl w-8/12 mx-auto">{{.Content}}</article>
 </div>
+{{template "footer.html" .}}

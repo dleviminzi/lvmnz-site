@@ -1,0 +1,33 @@
+<!-- Main container, centered on the screen -->
+<div>
+  <div class="relative bg-solarLightBase03 text-darkGray mx-auto mt-5 mb-5 p-4 shadow-md w-10/12 xl:w-[870px] lg:w-[830px] md:w-[700px] flex flex-col items-center">
+
+    <!-- Inner container to hold the name and buttons -->
+    <!-- On small screens flex-col will stack items, on medium and up flex-row will align items in a row -->
+    <div class="flex flex-col md:flex-row items-center w-full justify-between">
+      
+      <!-- Header -->
+      <header class="text-center mb-4 md:mb-0">
+        <a class="text-4xl transition-all hover:text-periwinkle" href="/">Daniel Levi-Minzi</a>
+        <!-- Underline under the name -->
+        <div class="w-[fit-content] h-0.5 bg-periwinkle mt-1"></div>
+      </header>
+      
+<!-- Navigation -->
+<nav>
+  <ul class="flex flex-row space-x-4">
+    <li>
+      <button class="{{if eq .ActivePage `index`}}bg-periwinkle text-white{{else}}border border-periwinkle{{end}} transition-all hover:bg-periwinkle hover:text-white shadow-md px-4 py-2" hx-get="/" hx-target="#content" hx-swap="outerHTML" hx-push-url="/">About</button>
+    </li>
+    <li>
+      <button class="{{if eq .ActivePage `blog`}}bg-periwinkle text-white{{else}}border border-periwinkle{{end}} transition-all hover:bg-periwinkle hover:text-white shadow-md px-4 py-2" hx-get="/blog/" hx-target="#content" hx-swap="outerHTML" hx-push-url="/blog/">Blog</button>
+    </li>
+    <li>
+      <button class="{{if eq .ActivePage `photos`}}bg-periwinkle text-white{{else}}border border-periwinkle{{end}} transition-all hover:bg-periwinkle hover:text-white shadow-md px-4 py-2" hx-get="/photos/" hx-target="#content" hx-swap="outerHTML" hx-push-url="/photos/">Photos</button>
+    </li>
+  </ul>
+</nav>
+
+    </div>
+  </div>
+</div>

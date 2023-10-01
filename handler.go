@@ -7,6 +7,7 @@ import (
 	"io/fs"
 	"net/http"
 	"path"
+	"sort"
 	"strings"
 	"text/template"
 
@@ -16,6 +17,9 @@ import (
 //go:embed content
 var content embed.FS
 
+//go:embed static/photos
+var photos embed.FS
+
 // Initialize templates
 var tmpl *template.Template
 
@@ -24,14 +28,16 @@ func init() {
 }
 
 type (
-	PostList struct {
-		Posts []Post
-	}
-
 	Post struct {
 		DisplayTitle string
 		LinkTitle    string
 		Date         string
+	}
+
+	Photo struct {
+		Name   string
+		Source string
+		Date   string
 	}
 
 	Handler struct {
@@ -39,11 +45,13 @@ type (
 )
 
 func (h Handler) index(w http.ResponseWriter, r *http.Request) {
-	tmpl.ExecuteTemplate(w, "index.html", nil)
-}
-
-func (h Handler) about(w http.ResponseWriter, r *http.Request) {
-	tmpl.ExecuteTemplate(w, "about.html", nil)
+	// TODO: add ActivePage (generall pass in map object that contains whatever we need)
+	// we can do this because it is all server side and I don't need to worry about
+	// any "contract". What joy
+	pageData := map[string]any{
+		"ActivePage": "index",
+	}
+	tmpl.ExecuteTemplate(w, "index.html", pageData)
 }
 
 func (h Handler) blog(w http.ResponseWriter, r *http.Request) {
@@ -60,10 +68,12 @@ func (h Handler) blog(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	htmlContent := convertMarkdownToHTML(markdown)
-	converted := map[string]any{
-		"Content": htmlContent,
+
+	pageData := map[string]any{
+		"ActivePage": "blog",
+		"Content":    htmlContent,
 	}
-	tmpl.ExecuteTemplate(w, "blog_post.html", converted)
+	tmpl.ExecuteTemplate(w, "blog_post.html", pageData)
 }
 
 func (h Handler) blogList(w http.ResponseWriter, r *http.Request) {
@@ -73,7 +83,37 @@ func (h Handler) blogList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl.ExecuteTemplate(w, "blog.html", posts)
+	pageData := map[string]any{
+		"ActivePage": "blog",
+		"Posts":      posts,
+	}
+	tmpl.ExecuteTemplate(w, "blog.html", pageData)
+}
+
+func (h Handler) photos(w http.ResponseWriter, r *http.Request) {
+	dir, err := fs.ReadDir(photos, "static/photos")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	photos := make([]Photo, len(dir))
+	sort.Slice(dir, func(i, j int) bool {
+		return dir[i].Name() > dir[j].Name()
+	})
+	for i, file := range dir {
+		photos[i] = parsePhotoFile(file)
+	}
+
+	pageData := map[string]any{
+		"ActivePage": "photos",
+		"Photos":     photos,
+	}
+	err = tmpl.ExecuteTemplate(w, "photos.html", pageData)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
 func setupRoutes() {
@@ -82,7 +122,7 @@ func setupRoutes() {
 	http.Handle("/static/", http.StripPrefix("/static", http.FileServer(http.Dir("static"))))
 	http.HandleFunc("/", h.index)
 	http.HandleFunc("/blog/", h.blog)
-	http.HandleFunc("/about/", h.about)
+	http.HandleFunc("/photos/", h.photos)
 }
 
 func convertMarkdownToHTML(markdown []byte) string {
@@ -90,23 +130,37 @@ func convertMarkdownToHTML(markdown []byte) string {
 	return string(htmlContent)
 }
 
-func readBlogPostMetadata() (PostList, error) {
+func readBlogPostMetadata() ([]Post, error) {
 	dir, err := fs.ReadDir(content, "content")
 	if err != nil {
-		return PostList{}, err
+		return []Post{}, err
 	}
 
-	var postList PostList
-	postList.Posts = make([]Post, len(dir))
+	posts := make([]Post, len(dir))
 	for i, file := range dir {
 		fileName := strings.Split(file.Name(), "_")
 		if len(fileName) != 2 {
-			return PostList{}, errors.New("invalid post, missing metadata")
+			return []Post{}, errors.New("invalid post, missing metadata")
 		}
-		postList.Posts[i].DisplayTitle = strings.Join(strings.Split(fileName[0], "-"), " ")
-		postList.Posts[i].LinkTitle = fileName[0]
-		postList.Posts[i].Date = strings.Trim(fileName[1], ".md")
-		fmt.Printf("found post: %s\n", fileName[0])
+		posts[i].DisplayTitle = strings.Join(strings.Split(fileName[0], "-"), " ")
+		posts[i].LinkTitle = fileName[0]
+		posts[i].Date = strings.Trim(fileName[1], ".md")
 	}
-	return postList, nil
+	return posts, nil
+}
+
+func parsePhotoFile(file fs.DirEntry) Photo {
+	source := "/static/photos/" + file.Name()
+	fileName := strings.Split(file.Name(), ".jpeg")[0]
+
+	metaDataParts := strings.Split(fileName, "_")
+	dateParts := strings.Split(metaDataParts[0], "-")
+	date := fmt.Sprintf("%s/%s/%s", dateParts[1], dateParts[2], dateParts[0])
+	name := strings.Join(strings.Split(metaDataParts[1], "-"), " ")
+
+	return Photo{
+		Source: source,
+		Date:   date,
+		Name:   name,
+	}
 }

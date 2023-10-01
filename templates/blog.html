@@ -5,13 +5,17 @@
 {{end}} 
 {{define "Blog"}}
 <ul id="Blog">
-  {{range .Posts}} {{template "BlogPost" .}} {{end}}
+  {{range .Posts}} 
+    {{template "BlogPost" .}} 
+  {{end}}
 </ul>
 {{end}}
 
-<div id="content">
 {{template "header.html" .}}
-  <h1>Welcome to Blog Page</h1>
-  {{template "Blog" .}}
-{{template "footer.html" .}}
+<div id="content">
+{{template "nav.html" .}}
+  <div class="prose lg:prose-xl w-7/12 mx-auto">
+      {{template "Blog" .}}
+  </div>
 </div>
+{{template "footer.html" .}}
