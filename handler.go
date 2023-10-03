@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"path"
 	"sort"
+	"strconv"
 	"strings"
 	"text/template"
 
@@ -17,8 +18,8 @@ import (
 //go:embed content
 var content embed.FS
 
-//go:embed static/photos
-var photos embed.FS
+//go:embed static
+var static embed.FS
 
 // Initialize templates
 var tmpl *template.Template
@@ -31,6 +32,7 @@ type (
 	Post struct {
 		DisplayTitle string
 		LinkTitle    string
+		DisplayDate  string
 		Date         string
 	}
 
@@ -45,9 +47,6 @@ type (
 )
 
 func (h Handler) index(w http.ResponseWriter, r *http.Request) {
-	// TODO: add ActivePage (generall pass in map object that contains whatever we need)
-	// we can do this because it is all server side and I don't need to worry about
-	// any "contract". What joy
 	pageData := map[string]any{
 		"ActivePage": "index",
 	}
@@ -91,25 +90,60 @@ func (h Handler) blogList(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h Handler) photos(w http.ResponseWriter, r *http.Request) {
-	dir, err := fs.ReadDir(photos, "static/photos")
+
+	var (
+		page     int
+		nextPage int
+		err      error
+	)
+	pageStr := r.URL.Query().Get("page")
+	if pageStr != "" {
+		page, err = strconv.Atoi(pageStr)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	if page < 1 {
+		page = 1
+	}
+	nextPage = page + 1
+
+	start := (page - 1) * 2
+	end := start + 2
+
+	dir, err := fs.ReadDir(static, "static/photos")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	photos := make([]Photo, len(dir))
 	sort.Slice(dir, func(i, j int) bool {
 		return dir[i].Name() > dir[j].Name()
 	})
-	for i, file := range dir {
+
+	if end > len(dir) {
+		end = len(dir)
+		nextPage = -1
+	}
+	pagDir := dir[start:end]
+	photos := make([]Photo, len(pagDir))
+	for i, file := range pagDir {
 		photos[i] = parsePhotoFile(file)
 	}
 
 	pageData := map[string]any{
 		"ActivePage": "photos",
 		"Photos":     photos,
+		"NextPage":   nextPage,
 	}
-	err = tmpl.ExecuteTemplate(w, "photos.html", pageData)
+
+	active_tmpl := "photos.html"
+	if page > 1 {
+		active_tmpl = "photos_gallery.html"
+	}
+	err = tmpl.ExecuteTemplate(w, active_tmpl, pageData)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -144,6 +178,7 @@ func readBlogPostMetadata() ([]Post, error) {
 		}
 		posts[i].DisplayTitle = strings.Join(strings.Split(fileName[0], "-"), " ")
 		posts[i].LinkTitle = fileName[0]
+		posts[i].DisplayDate = strings.Join(strings.Split(strings.Trim(fileName[1], ".md"), "-"), "/")
 		posts[i].Date = strings.Trim(fileName[1], ".md")
 	}
 	return posts, nil

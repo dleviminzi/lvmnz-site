@@ -1,21 +1,25 @@
 {{define "BlogPost"}}
-<li hx-get="/blog/{{.LinkTitle}}_{{.Date}}" hx-swap="outerHTML" hx-target="#content" hx-push-url="/blog/{{.LinkTitle}}_{{.Date}}">
-  {{.DisplayTitle}} - {{.Date}}
-</li>
-{{end}} 
+  <a class="my-4 block py-2 px-4 rounded bg-white hover:bg-periwinkle border border-gray-300 cursor-pointer"
+     hx-get="/blog/{{.LinkTitle}}_{{.Date}}" 
+     hx-swap="outerHTML" 
+     hx-target="#content" 
+     hx-push-url="/blog/{{.LinkTitle}}_{{.Date}}">
+    {{.DisplayTitle}} - {{.DisplayDate}}
+  </a>
+{{end}}
 {{define "Blog"}}
 <ul id="Blog">
-  {{range .Posts}} 
-    {{template "BlogPost" .}} 
+  {{range .Posts}}
+  {{template "BlogPost" .}}
   {{end}}
 </ul>
 {{end}}
 
 {{template "header.html" .}}
 <div id="content">
-{{template "nav.html" .}}
+  {{template "nav.html" .}}
   <div class="prose lg:prose-xl w-7/12 mx-auto">
-      {{template "Blog" .}}
+    {{template "Blog" .}}
   </div>
 </div>
 {{template "footer.html" .}}

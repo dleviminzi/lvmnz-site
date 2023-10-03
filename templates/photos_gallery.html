@@ -1,0 +1,30 @@
+<div class="lg:grid lg:grid-cols-12 lg:gap-4 overflow-y-auto">
+  {{range .Photos}}
+  <div class="lg:col-start-2 lg:col-span-11 lg:flex lg:items-center lg:py-8">
+    <div class="flex-none">
+      <div class="p-4 bg-white shadow inline-block rounded">
+        <p class="whitespace-nowrap font-semibold text-xl">{{.Name}}</p>
+        <p class="italic">{{.Date}}</p>
+      </div>
+    </div>
+    <div class="lg:flex-grow lg:flex lg:items-center lg:justify-center">
+      <img class="transition-all lg:max-h-[50rem] lg:px-24 lg:hover:px-6 lg:hover:max-h-[52rem]" src="{{.Source}}"
+        alt="Photo: {{.Name}}" />
+    </div>
+  </div>
+  <br />
+  {{else}}
+  <p>No images found.</p>
+  {{end}}
+</div>
+
+{{if eq .NextPage -1}}
+<div id="loadMoreBtn" class="flex justify-center items-center mb-4">
+  <p class="border bg-white border-periwinkle transition-all shadow-md px-4 py-2">No More</p>
+</div>
+{{else}}
+<div id="loadMoreBtn" class="flex justify-center items-center mb-4">
+  <button class="border bg-white border-periwinkle transition-all hover:bg-periwinkle shadow-md px-3 py-1 rounded" hx-get="/photos/"
+    hx-vals='{"page": {{.NextPage}}}' hx-swap="outerHTML" hx-target="#loadMoreBtn">Load More</button>
+</div>
+{{end}}
