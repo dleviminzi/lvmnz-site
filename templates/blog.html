@@ -1,24 +1,28 @@
 {{define "BlogPost"}}
-  <a class="my-4 block py-2 px-4 rounded bg-white hover:bg-periwinkle border border-gray-300 cursor-pointer"
+  <a class="my-4 block py-2 px-4 rounded bg-white hover:bg-periwinkle border border-gray-300 cursor-pointer no-underline"
      hx-get="/blog/{{.LinkTitle}}_{{.Date}}" 
      hx-swap="outerHTML" 
      hx-target="#content" 
      hx-push-url="/blog/{{.LinkTitle}}_{{.Date}}">
-    {{.DisplayTitle}} - {{.DisplayDate}}
+    <div class="flex justify-between">
+      <span>{{.DisplayTitle}}</span>
+      <span class="hidden lg:inline-block"><span class="rounded bg-periwinkle text-white px-2 py-1 italic">{{.DisplayDate}}</span></span>
+    </div>
+    <div class="lg:hidden text-right lg:text-center mt-2">
+      <span class="rounded bg-periwinkle text-white px-2 py-1 italic">{{.DisplayDate}}</span>
+    </div>
   </a>
 {{end}}
 {{define "Blog"}}
-<ul id="Blog">
   {{range .Posts}}
   {{template "BlogPost" .}}
   {{end}}
-</ul>
 {{end}}
 
 {{template "header.html" .}}
 <div id="content">
   {{template "nav.html" .}}
-  <div class="prose lg:prose-xl w-7/12 mx-auto">
+  <div class="prose lg:prose-lg xl:w-[870px] lg:w-[830px] md:w-[700px] w-[90%] mx-auto max-w-none">
     {{template "Blog" .}}
   </div>
 </div>

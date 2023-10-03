@@ -2,9 +2,9 @@
   {{range .Photos}}
   <div class="lg:col-start-2 lg:col-span-11 lg:flex lg:items-center lg:py-8">
     <div class="flex-none">
-      <div class="p-4 bg-white shadow inline-block rounded">
-        <p class="whitespace-nowrap font-semibold text-xl">{{.Name}}</p>
-        <p class="italic">{{.Date}}</p>
+      <div class="p-4 bg-periwinkle rounded-t inline-block lg:rounded">
+        <p class="whitespace-nowrap font-semibold text-xl text-white">{{.Name}}</p>
+        <p class="italic text-white">{{.Date}}</p>
       </div>
     </div>
     <div class="lg:flex-grow lg:flex lg:items-center lg:justify-center">
@@ -17,7 +17,6 @@
   <p>No images found.</p>
   {{end}}
 </div>
-
 {{if eq .NextPage -1}}
 <div id="loadMoreBtn" class="flex justify-center items-center mb-4">
   <p class="border bg-white border-periwinkle transition-all shadow-md px-4 py-2">No More</p>

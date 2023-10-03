@@ -11,22 +11,27 @@ import (
 	"strconv"
 	"strings"
 	"text/template"
+	"time"
 
 	"github.com/russross/blackfriday/v2"
 )
 
-//go:embed content
-var content embed.FS
+const (
+	INDEX              = "index"
+	BLOG               = "blog"
+	PHOTOS             = "photos"
+	PHOTOS_PER_REQUEST = 15
+)
 
-//go:embed static
-var static embed.FS
+var (
+	tmpl *template.Template
 
-// Initialize templates
-var tmpl *template.Template
+	//go:embed content
+	content embed.FS
 
-func init() {
-	tmpl = template.Must(template.ParseGlob("templates/*.html"))
-}
+	//go:embed static
+	static embed.FS
+)
 
 type (
 	Post struct {
@@ -46,21 +51,30 @@ type (
 	}
 )
 
-func (h Handler) index(w http.ResponseWriter, r *http.Request) {
+func init() {
+	tmpl = template.Must(template.ParseGlob("templates/*.html"))
+}
+
+// Index is the handler function for the index page.
+func (h Handler) Index(w http.ResponseWriter, r *http.Request) {
 	pageData := map[string]any{
-		"ActivePage": "index",
+		"ActivePage": INDEX,
 	}
 	tmpl.ExecuteTemplate(w, "index.html", pageData)
 }
 
-func (h Handler) blog(w http.ResponseWriter, r *http.Request) {
+// Blog is the handler function for blog posts. It will deligate to BlogList if no
+// specific post is requested.
+func (h Handler) Blog(w http.ResponseWriter, r *http.Request) {
+	// If the URL path is "/blog" or "/blog/", call the blogList handler.
 	if r.URL.Path == "/blog" || r.URL.Path == "/blog/" {
-		h.blogList(w, r) // Call the blog handler
+		h.BlogList(w, r) // Call the blog handler
 		return
 	}
 
 	title := path.Base(r.URL.Path)
-	fmt.Printf("received request to fetch blog post: %s\n", title)
+
+	// Read the markdown content of the blog post from the file system.
 	markdown, err := fs.ReadFile(content, "content/"+title+".md")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -69,13 +83,14 @@ func (h Handler) blog(w http.ResponseWriter, r *http.Request) {
 	htmlContent := convertMarkdownToHTML(markdown)
 
 	pageData := map[string]any{
-		"ActivePage": "blog",
+		"ActivePage": BLOG,
 		"Content":    htmlContent,
 	}
 	tmpl.ExecuteTemplate(w, "blog_post.html", pageData)
 }
 
-func (h Handler) blogList(w http.ResponseWriter, r *http.Request) {
+// BlogList is the handler function for the blog list page.
+func (h Handler) BlogList(w http.ResponseWriter, r *http.Request) {
 	posts, err := readBlogPostMetadata()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -83,14 +98,16 @@ func (h Handler) blogList(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pageData := map[string]any{
-		"ActivePage": "blog",
+		"ActivePage": BLOG,
 		"Posts":      posts,
 	}
 	tmpl.ExecuteTemplate(w, "blog.html", pageData)
 }
 
-func (h Handler) photos(w http.ResponseWriter, r *http.Request) {
+// Photos is the handler function for the photos page. It returns a paginated list of photos.
+func (h Handler) Photos(w http.ResponseWriter, r *http.Request) {
 
+	// Get the page number from the query string.
 	var (
 		page     int
 		nextPage int
@@ -110,8 +127,8 @@ func (h Handler) photos(w http.ResponseWriter, r *http.Request) {
 	}
 	nextPage = page + 1
 
-	start := (page - 1) * 2
-	end := start + 2
+	start := (page - 1) * PHOTOS_PER_REQUEST
+	end := start + PHOTOS_PER_REQUEST
 
 	dir, err := fs.ReadDir(static, "static/photos")
 	if err != nil {
@@ -119,8 +136,13 @@ func (h Handler) photos(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Sort the directory in reverse order so that the newest photos are first.
 	sort.Slice(dir, func(i, j int) bool {
-		return dir[i].Name() > dir[j].Name()
+		d1, _ := strings.CutPrefix(dir[i].Name(), "/static/photos/")
+		d2, _ := strings.CutPrefix(dir[j].Name(), "/static/photos/")
+		date1, _ := time.Parse("2006-01-02", strings.Split(d1, "_")[0])
+		date2, _ := time.Parse("2006-01-02", strings.Split(d2, "_")[0])
+		return date1.After(date2)
 	})
 
 	if end > len(dir) {
@@ -134,7 +156,7 @@ func (h Handler) photos(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pageData := map[string]any{
-		"ActivePage": "photos",
+		"ActivePage": PHOTOS,
 		"Photos":     photos,
 		"NextPage":   nextPage,
 	}
@@ -154,9 +176,9 @@ func setupRoutes() {
 	h := Handler{}
 
 	http.Handle("/static/", http.StripPrefix("/static", http.FileServer(http.Dir("static"))))
-	http.HandleFunc("/", h.index)
-	http.HandleFunc("/blog/", h.blog)
-	http.HandleFunc("/photos/", h.photos)
+	http.HandleFunc("/", h.Index)
+	http.HandleFunc("/blog/", h.Blog)
+	http.HandleFunc("/photos/", h.Photos)
 }
 
 func convertMarkdownToHTML(markdown []byte) string {
@@ -188,6 +210,7 @@ func parsePhotoFile(file fs.DirEntry) Photo {
 	source := "/static/photos/" + file.Name()
 	fileName := strings.Split(file.Name(), ".jpeg")[0]
 
+	// The file name is in the format YYYY-MM-DD_name-of-photo.jpeg
 	metaDataParts := strings.Split(fileName, "_")
 	dateParts := strings.Split(metaDataParts[0], "-")
 	date := fmt.Sprintf("%s/%s/%s", dateParts[1], dateParts[2], dateParts[0])
