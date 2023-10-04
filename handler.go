@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/fs"
 	"net/http"
+	"os"
 	"path"
 	"sort"
 	"strconv"
@@ -28,9 +29,6 @@ var (
 
 	//go:embed content
 	content embed.FS
-
-	//go:embed static
-	static embed.FS
 )
 
 type (
@@ -130,7 +128,7 @@ func (h Handler) Photos(w http.ResponseWriter, r *http.Request) {
 	start := (page - 1) * PHOTOS_PER_REQUEST
 	end := start + PHOTOS_PER_REQUEST
 
-	dir, err := fs.ReadDir(static, "static/photos")
+	dir, err := os.ReadDir("static/photos")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
