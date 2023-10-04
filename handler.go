@@ -206,9 +206,9 @@ func readBlogPostMetadata() ([]Post, error) {
 
 func parsePhotoFile(file fs.DirEntry) Photo {
 	source := "/static/photos/" + file.Name()
-	fileName := strings.Split(file.Name(), ".jpeg")[0]
+	fileName := strings.Split(file.Name(), ".webp")[0]
 
-	// The file name is in the format YYYY-MM-DD_name-of-photo.jpeg
+	// The file name is in the format YYYY-MM-DD_name-of-photo.webp
 	metaDataParts := strings.Split(fileName, "_")
 	dateParts := strings.Split(metaDataParts[0], "-")
 	date := fmt.Sprintf("%s/%s/%s", dateParts[1], dateParts[2], dateParts[0])
