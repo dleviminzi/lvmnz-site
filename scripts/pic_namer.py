@@ -2,7 +2,7 @@ import os
 import uuid
 from datetime import datetime
 
-directory_path = "../static/photos/raw"
+directory_path = "./static/photos/new"
 
 for filename in os.listdir(directory_path):
     if filename.lower().endswith('.jpeg'):
