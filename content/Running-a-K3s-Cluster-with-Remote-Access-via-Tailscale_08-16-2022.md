@@ -6,7 +6,7 @@ In this tutorial I will explain how to get a K3s cluster running and how to acce
 
 The primary reason I've decided to do this is learning. Container deployments are standard at work, but the management and set up is handled by other teams. It's pretty easy to set up a cluster for learning with a cloud provider or even minikube. I went the raspberry pi route because I like hardware and its nice to be able to point to something physical. If you give me a reason to buy a computer, I probably will. 
 
-I'm using Tailscale because sometimes I'm not at home, but still want to play with my stuff. 
+I'm using Tailscale because sometimes I'm not at home, but I still want to play with my stuff. 
 
 #### Setting up K3s
 
