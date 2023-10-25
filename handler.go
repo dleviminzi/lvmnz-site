@@ -95,6 +95,12 @@ func (h Handler) BlogList(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	sort.Slice(posts, func(i, j int) bool {
+		date1, _ := time.Parse("01-02-2006", posts[i].Date)
+		date2, _ := time.Parse("01-02-2006", posts[j].Date)
+		return date1.After(date2)
+	})
+
 	pageData := map[string]any{
 		"ActivePage": BLOG,
 		"Posts":      posts,
