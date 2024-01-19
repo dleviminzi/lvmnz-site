@@ -8,7 +8,7 @@ def convert_jpeg_to_webp(jpeg_path, webp_path):
     
     img.save(webp_path, 'WEBP', quality=70)
 
-input_directory = "./static/new"
+input_directory = "./raw"
 output_directory = os.path.join(input_directory, "original")
 
 if not os.path.exists(output_directory):
