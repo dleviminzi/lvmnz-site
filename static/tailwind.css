@@ -1110,10 +1110,6 @@ video {
   max-width: none;
 }
 
-.flex-none {
-  flex: none;
-}
-
 .cursor-pointer {
   cursor: pointer;
 }
@@ -1146,10 +1142,6 @@ video {
 
 .overflow-y-auto {
   overflow-y: auto;
-}
-
-.whitespace-nowrap {
-  white-space: nowrap;
 }
 
 .rounded {
@@ -1239,15 +1231,6 @@ video {
 .text-3xl {
   font-size: 1.875rem;
   line-height: 2.25rem;
-}
-
-.text-xl {
-  font-size: 1.25rem;
-  line-height: 1.75rem;
-}
-
-.font-semibold {
-  font-weight: 600;
 }
 
 .italic {
@@ -1578,6 +1561,10 @@ video {
     margin-left: 1.25rem;
   }
 
+  .lg\:mr-4 {
+    margin-right: 1rem;
+  }
+
   .lg\:inline-block {
     display: inline-block;
   }
@@ -1646,15 +1633,6 @@ video {
 
   .lg\:text-center {
     text-align: center;
-  }
-
-  .lg\:hover\:max-h-\[52rem\]:hover {
-    max-height: 52rem;
-  }
-
-  .lg\:hover\:px-6:hover {
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
   }
 }
 

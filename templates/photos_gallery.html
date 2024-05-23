@@ -1,15 +1,13 @@
 <div class="lg:grid lg:grid-cols-12 lg:gap-4 overflow-y-auto">
   {{range .Photos}}
-  <div class="lg:col-start-2 lg:col-span-11 lg:flex lg:items-center lg:py-8">
-    <div class="flex-none">
-      <div class="p-4 bg-periwinkle rounded-t inline-block lg:rounded">
-        <p class="whitespace-nowrap font-semibold text-xl text-white">{{.Name}}</p>
+  <div class="lg:col-start-2 lg:col-span-11 lg:flex lg:items-center lg:py-8 lg:justify-center">
+    <div class="flex items-center justify-center">
+      <div class="p-4 bg-periwinkle rounded-t inline-block lg:rounded lg:mr-4">
         <p class="italic text-white">{{.Date}}</p>
       </div>
-    </div>
-    <div class="lg:flex-grow lg:flex lg:items-center lg:justify-center">
-      <img class="transition-all lg:max-h-[50rem] lg:px-24 lg:hover:px-6 lg:hover:max-h-[52rem]" src="{{.Source}}"
-        alt="Photo: {{.Name}}" loading="lazy" />
+      <div class="lg:flex-grow lg:flex lg:items-center lg:justify-center">
+        <img class="transition-all lg:max-h-[50rem] lg:px-24" src="{{.Source}}" alt="Photo: {{.Name}}" loading="lazy" />
+      </div>
     </div>
   </div>
   <br />
@@ -23,7 +21,6 @@
 </div>
 {{else}}
 <div id="loadMoreBtn" class="flex justify-center items-center mb-4">
-  <button class="border bg-white border-periwinkle transition-all hover:bg-periwinkle shadow-md px-3 py-1 rounded"
-    hx-get="/photos/" hx-vals='{"page": {{.NextPage}}}' hx-swap="outerHTML" hx-target="#loadMoreBtn">Load More</button>
+  <button class="border bg-white border-periwinkle transition-all hover:bg-periwinkle shadow-md px-3 py-1 rounded" hx-get="/photos/" hx-vals='{"page": {{.NextPage}}}' hx-swap="outerHTML" hx-target="#loadMoreBtn">Load More</button>
 </div>
 {{end}}
