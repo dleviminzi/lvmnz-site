@@ -21,6 +21,7 @@ const (
 	INDEX              = "index"
 	BLOG               = "blog"
 	PHOTOS             = "photos"
+	TEST               = "test"
 	PHOTOS_PER_REQUEST = 15
 )
 
