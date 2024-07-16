@@ -1,10 +1,13 @@
 package main
 
 import (
+	"context"
 	"embed"
 	"errors"
 	"fmt"
 	"io/fs"
+	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"path"
@@ -14,6 +17,11 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/aws/aws-sdk-go-v2/credentials"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/joho/godotenv"
 	"github.com/russross/blackfriday/v2"
 )
 
@@ -47,11 +55,42 @@ type (
 	}
 
 	Handler struct {
+		tigrisClient *s3.Client
 	}
 )
 
 func init() {
 	tmpl = template.Must(template.ParseGlob("templates/*.html"))
+}
+
+func newHandler() (*Handler, error) {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	accessKey := os.Getenv("AWS_ACCESS_KEY_ID")
+	secretKey := os.Getenv("AWS_SECRET_ACCESS_KEY")
+	region := os.Getenv("AWS_REGION")
+	endpoint := os.Getenv("AWS_ENDPOINT_URL_S3")
+
+	cfg, err := config.LoadDefaultConfig(context.TODO(),
+		config.WithRegion(region),
+		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(accessKey, secretKey, "")),
+	)
+	if err != nil {
+		slog.Error("creating aws config", "error", err)
+		return nil, err
+	}
+
+	// Create an S3 client
+	client := s3.NewFromConfig(cfg, func(o *s3.Options) {
+		o.BaseEndpoint = aws.String(endpoint)
+	})
+
+	return &Handler{
+		tigrisClient: client,
+	}, nil
 }
 
 // Index is the handler function for the index page.
@@ -111,8 +150,6 @@ func (h Handler) BlogList(w http.ResponseWriter, r *http.Request) {
 
 // Photos is the handler function for the photos page. It returns a paginated list of photos.
 func (h Handler) Photos(w http.ResponseWriter, r *http.Request) {
-
-	// Get the page number from the query string.
 	var (
 		page     int
 		nextPage int
@@ -132,32 +169,41 @@ func (h Handler) Photos(w http.ResponseWriter, r *http.Request) {
 	}
 	nextPage = page + 1
 
-	start := (page - 1) * PHOTOS_PER_REQUEST
-	end := start + PHOTOS_PER_REQUEST
-
-	dir, err := os.ReadDir("static/photos")
+	// TODO: switch to using Tigris instead of embedding all the photos
+	res, err := h.tigrisClient.ListObjectsV2(context.TODO(), &s3.ListObjectsV2Input{
+		Bucket: aws.String("lvmnz-photos"),
+	})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	// Sort the directory in reverse order so that the newest photos are first.
-	sort.Slice(dir, func(i, j int) bool {
-		d1, _ := strings.CutPrefix(dir[i].Name(), "/static/photos/")
-		d2, _ := strings.CutPrefix(dir[j].Name(), "/static/photos/")
-		date1, _ := time.Parse("2006-01-02", strings.Split(d1, "_")[0])
-		date2, _ := time.Parse("2006-01-02", strings.Split(d2, "_")[0])
-		return date1.After(date2)
-	})
-
-	if end > len(dir) {
-		end = len(dir)
+	start := len(res.Contents) - ((page - 1) * PHOTOS_PER_REQUEST) - 1
+	end := max(start-PHOTOS_PER_REQUEST, 0)
+	if end == 0 {
+		// indicates that there are no more pages
 		nextPage = -1
 	}
-	pagDir := dir[start:end]
-	photos := make([]Photo, len(pagDir))
-	for i, file := range pagDir {
-		photos[i] = parsePhotoFile(file)
+
+	photos := make([]Photo, 0, PHOTOS_PER_REQUEST)
+	for i := start; i > end; i -= 1 {
+		item := res.Contents[i]
+		name := aws.ToString(item.Key)
+		url := fmt.Sprintf("https://fly.storage.tigris.dev/lvmnz-photos/%s", name)
+
+		t, err := time.Parse("2006-01-02", strings.Split(name, "_")[0])
+		if err != nil {
+			slog.Error("parsing photo date", "error", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		slog.Info("photo", "name", name, "url", url, "date", t.Format("01/02/2006"), "index", start-i)
+		photos = append(photos, Photo{
+			Name:   name,
+			Source: url,
+			Date:   t.Format("01/02/2006"),
+		})
 	}
 
 	pageData := map[string]any{
@@ -177,13 +223,17 @@ func (h Handler) Photos(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func setupRoutes() {
-	h := Handler{}
+func setupRoutes() error {
+	h, err := newHandler()
+	if err != nil {
+		return err
+	}
 
 	http.Handle("/static/", http.StripPrefix("/static", http.FileServer(http.Dir("static"))))
 	http.HandleFunc("/", h.Index)
 	http.HandleFunc("/blog/", h.Blog)
 	http.HandleFunc("/photos/", h.Photos)
+	return nil
 }
 
 func convertMarkdownToHTML(markdown []byte) string {
@@ -209,21 +259,4 @@ func readBlogPostMetadata() ([]Post, error) {
 		posts[i].Date = strings.Trim(fileName[1], ".md")
 	}
 	return posts, nil
-}
-
-func parsePhotoFile(file fs.DirEntry) Photo {
-	source := "/static/photos/" + file.Name()
-	fileName := strings.Split(file.Name(), ".webp")[0]
-
-	// The file name is in the format YYYY-MM-DD_name-of-photo.webp
-	metaDataParts := strings.Split(fileName, "_")
-	dateParts := strings.Split(metaDataParts[0], "-")
-	date := fmt.Sprintf("%s/%s/%s", dateParts[1], dateParts[2], dateParts[0])
-	name := strings.Join(strings.Split(metaDataParts[1], "-"), " ")
-
-	return Photo{
-		Source: source,
-		Date:   date,
-		Name:   name,
-	}
 }
