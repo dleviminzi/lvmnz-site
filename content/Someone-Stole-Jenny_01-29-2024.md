@@ -1,5 +1,4 @@
 ## Someone Stole Landon's Car
-
 Nobody expected it... The long-awaited sequel to somebody stealing my bike... 
 
 Somebody stole Landon's car.

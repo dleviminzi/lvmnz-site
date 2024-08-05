@@ -1,5 +1,4 @@
 ## Someone Stole My Bike
-
 I had been expecting someone to steal it for a while now. I didn't have a great lock on it. My bike was old, kind of rusty, and very ugly. I figured that most thieves would not bother making the effort, but that one day the right thief would come along.
 
 My bike was about 15 years old. It had been my dad's bike. He gave it to me when I moved back to New York after college. 

@@ -1,5 +1,4 @@
 ## Extending Razer Laptop Control to Support Battery Limiting 
-
 I recently purchased the Razer Blade 14. This year's model came with a much needed software improvement: battery limiting! Previous generations of this laptop suffered from battery degradation issues. The batteries would often expand. In the worst cases, the expanding battery could damage other critical components and even shatter the glass touchpad. Many of Razer's competitors had similar issues. To combat these issues most manufacturers began to allow users to stop the laptop from charging beyond a certain percentage. My basic understanding is that limiting the charge causes a shallower depth of discharge and decreases voltage stress. Going from 100% to 0% (deep discharge) is more stressful for a battery than going from 60% to 0% (relatively shallow discharge). In terms of voltage stress, a battery at 100% is at its maximum voltage which causes stress.  
 
 In windows, you can configure battery limits using Razer's Synapse software. In my opinion, this application is terrible. It often won't even launch. When running Linux, there is a project aptly named Razer Laptop Control that aims to replicate Synapse's feature set. I found this project while trying to figure out how to stop my keyboard from constantly cycling the rainbow.  
@@ -7,7 +6,6 @@ In windows, you can configure battery limits using Razer's Synapse software. In 
 This software is written in Rust and it is a relatively old project. Given its age, it did not include the battery limiting feature. So, my goal was simple: add the battery limiting feature!
 
 #### Understanding the project
-
 ![Project diagram for Razer Laptop Control](/static/images/razercontrol-arch.png)
 
 There are two parts to this project: a daemon and a command line application. The command line application sends messages to the daemon via a socket. Those messages are parsed by the daemon which will then perform actions and save state. These actions involve sending packets to an embedded usb device. The command line application is messy, but I was able to step through it and quickly developed an understanding of what I would need to add. The daemon is much more complicated and I had to learn about the hidapi before I could even get started. 
@@ -17,7 +15,6 @@ With a basic understanding established, I turned to the community. There is a di
 ![Visual description of what Razer Laptop Control does.](/static/images/synapse-flow.png)
 
 #### Reverse engineering USB packets 
-
 The first step in implementing the battery limiting feature would be tracing how it worked in Windows. I was pointed to this great [guide](https://github.com/openrazer/openrazer/wiki/Reverse-Engineering-USB-Protocol) on reverse engineering the packets that Synapse sends to the USB controller. In general, you want to change the setting you want to understand and then intercept whatever packets get sent. Sadly, this meant I had to use Windows for something other than playing video games.
 
 Following the guide above, I used wireshark to look at packets as I toggled things on and off and changed various settings. I started by finding packets that I was already familiar with for the keyboard lighting, power modes, etc. Once I knew what those looked like, it was easy for me to spot the ones not yet covered by the project. By playing with the battery tab in Synapse I managed to build the following the table: 

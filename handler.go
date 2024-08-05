@@ -30,7 +30,7 @@ const (
 	BLOG               = "blog"
 	PHOTOS             = "photos"
 	TEST               = "test"
-	PHOTOS_PER_REQUEST = 15
+	PHOTOS_PER_REQUEST = 8
 )
 
 var (

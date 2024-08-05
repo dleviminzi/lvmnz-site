@@ -1,6 +1,6 @@
 <div>
   <div
-    class="relative background-color: #f2f2f2 text-darkGray mx-auto mt-6 mb-3 p-2 shadow-md w-11/12 xl:w-[880px] lg:w-[840px] md:w-[710px] flex flex-col items-center rounded">
+    class="relative background-color: #f2f2f2 text-darkGray mx-auto mt-6 mb-3 xl:w-[870px] lg:w-[830px] md:w-[700px] w-10/12 flex flex-col items-center">
 
     <div class="flex flex-col md:flex-row items-center w-full justify-between">
 
@@ -12,17 +12,17 @@
         <ul class="flex flex-row space-x-4">
           <li>
             <button
-              class="{{if eq .ActivePage `index`}}bg-periwinkle{{else}}border bg-white border-periwinkle{{end}} transition-all hover:bg-periwinkle shadow-md px-3 py-1 rounded"
+              class="text-lg transition-all {{if eq .ActivePage `index`}}border-b-2 border-periwinkle{{else}}border-b-2 border-transparent hover:border-periwinkle{{end}}"
               hx-get="/" hx-target="#content" hx-swap="outerHTML" hx-push-url="/">About</button>
           </li>
           <li>
             <button
-              class="{{if eq .ActivePage `blog`}}bg-periwinkle{{else}}border bg-white border-periwinkle{{end}} transition-all hover:bg-periwinkle shadow-md px-3 py-1 rounded"
+              class="text-lg transition-all {{if eq .ActivePage `blog`}}border-b-2 border-periwinkle{{else}}border-b-2 border-transparent hover:border-periwinkle{{end}}"
               hx-get="/blog/" hx-target="#content" hx-swap="outerHTML" hx-push-url="/blog/">Blog</button>
           </li>
           <li>
             <button
-              class="{{if eq .ActivePage `photos`}}bg-periwinkle{{else}}border bg-white border-periwinkle{{end}} transition-all hover:bg-periwinkle shadow-md px-3 py-1 rounded"
+              class="text-lg transition-all {{if eq .ActivePage `photos`}}border-b-2 border-periwinkle{{else}}border-b-2 border-transparent hover:border-periwinkle{{end}}"
               hx-get="/photos/" hx-target="#content" hx-swap="outerHTML" hx-push-url="/photos/">Photos</button>
           </li>
         </ul>
