@@ -1,22 +1,19 @@
 {{define "BlogPost"}}
-  <a class="my-4 block py-2 px-4 rounded bg-white hover:bg-periwinkle border border-gray-300 cursor-pointer no-underline"
-     hx-get="/blog/{{.LinkTitle}}_{{.Date}}" 
-     hx-swap="outerHTML" 
-     hx-target="#content" 
-     hx-push-url="/blog/{{.LinkTitle}}_{{.Date}}">
-    <div class="flex justify-between">
-      <span>{{.DisplayTitle}}</span>
-      <span class="hidden lg:inline-block"><span class="rounded bg-periwinkle text-white px-2 py-1 italic">{{.DisplayDate}}</span></span>
-    </div>
-    <div class="lg:hidden text-right lg:text-center mt-2">
-      <span class="rounded bg-periwinkle text-white px-2 py-1 italic">{{.DisplayDate}}</span>
-    </div>
-  </a>
+<a class="my-4 block py-2 px-4 cursor-pointer no-underline" hx-get="/blog/{{.LinkTitle}}_{{.Date}}" hx-swap="outerHTML"
+  hx-target="#content" hx-push-url="/blog/{{.LinkTitle}}_{{.Date}}">
+  <div class="border-b-2 border-black hover:border-periwinkle hover:text-periwinkle flex justify-between">
+    <span>{{.DisplayTitle}}</span>
+    <span class="hidden lg:inline-block"><span class="rounded px-2 py-1 italic">{{.DisplayDate}}</span></span>
+  </div>
+  <div class="lg:hidden text-left mt-1">
+    <span class="rounded italic">{{.DisplayDate}}</span>
+  </div>
+</a>
 {{end}}
 {{define "Blog"}}
-  {{range .Posts}}
-  {{template "BlogPost" .}}
-  {{end}}
+{{range .Posts}}
+{{template "BlogPost" .}}
+{{end}}
 {{end}}
 
 {{template "header.html" .}}

@@ -1,33 +1,27 @@
-<div>
-  <div
-    class="relative background-color: #f2f2f2 text-darkGray mx-auto mt-6 mb-3 xl:w-[870px] lg:w-[830px] md:w-[700px] w-10/12 flex flex-col items-center">
+<div class="relative bg-[#f2f2f2] text-darkGray mx-auto mt-6 mb-3 xl:w-[870px] lg:w-[830px] md:w-[700px] w-10/12">
+  <div class="flex flex-col items-center w-full">
+    <header class="text-center mb-1">
+      <a class="text-3xl transition-all hover:text-periwinkle" href="/">DANIEL LEVI-MINZI</a>
+    </header>
 
-    <div class="flex flex-col md:flex-row items-center w-full justify-between">
-
-      <header class="text-center mb-4 md:mb-0">
-        <a class="text-3xl transition-all hover:text-periwinkle" href="/">Daniel Levi-Minzi</a>
-      </header>
-
-      <nav>
-        <ul class="flex flex-row space-x-4">
-          <li>
-            <button
-              class="text-lg transition-all {{if eq .ActivePage `index`}}border-b-2 border-periwinkle{{else}}border-b-2 border-transparent hover:border-periwinkle{{end}}"
-              hx-get="/" hx-target="#content" hx-swap="outerHTML" hx-push-url="/">About</button>
-          </li>
-          <li>
-            <button
-              class="text-lg transition-all {{if eq .ActivePage `blog`}}border-b-2 border-periwinkle{{else}}border-b-2 border-transparent hover:border-periwinkle{{end}}"
-              hx-get="/blog/" hx-target="#content" hx-swap="outerHTML" hx-push-url="/blog/">Blog</button>
-          </li>
-          <li>
-            <button
-              class="text-lg transition-all {{if eq .ActivePage `photos`}}border-b-2 border-periwinkle{{else}}border-b-2 border-transparent hover:border-periwinkle{{end}}"
-              hx-get="/photos/" hx-target="#content" hx-swap="outerHTML" hx-push-url="/photos/">Photos</button>
-          </li>
-        </ul>
-      </nav>
-
-    </div>
+    <nav>
+      <ul class="flex flex-row space-x-4">
+        <li>
+          <button
+            class="text-lg transition-all {{if eq .ActivePage `index`}}border-b-2 border-periwinkle{{else}}border-b-2 border-transparent hover:border-periwinkle{{end}}"
+            hx-get="/" hx-target="#content" hx-swap="outerHTML" hx-push-url="/">ABOUT</button>
+        </li>
+        <li>
+          <button
+            class="text-lg transition-all {{if eq .ActivePage `blog`}}border-b-2 border-periwinkle{{else}}border-b-2 border-transparent hover:border-periwinkle{{end}}"
+            hx-get="/blog/" hx-target="#content" hx-swap="outerHTML" hx-push-url="/blog/">BLOG</button>
+        </li>
+        <li>
+          <button
+            class="text-lg transition-all {{if eq .ActivePage `photos`}}border-b-2 border-periwinkle{{else}}border-b-2 border-transparent hover:border-periwinkle{{end}}"
+            hx-get="/photos/" hx-target="#content" hx-swap="outerHTML" hx-push-url="/photos/">PHOTOS</button>
+        </li>
+      </ul>
+    </nav>
   </div>
 </div>

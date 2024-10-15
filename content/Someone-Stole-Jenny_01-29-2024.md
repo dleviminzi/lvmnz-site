@@ -6,7 +6,7 @@ Somebody stole Landon's car.
 I never had a car in college. In fact, I didn't even know how to drive until a few months ago. So, during the two years at UCLA where I lived with Landon, we drove around in his car Jenny. He got Jenny in high school and she had traveled with him from Arizona to Los Angeles to San Fransisco. 
 <div class="lg:col-start-2 lg:col-span-11 lg:flex items-center">
 <div class="flex-none">
-    <div class="p-4 bg-periwinkle rounded-t inline-block rounded text-white">
+    <div class="p-4  rounded-t inline-block rounded ">
     Last Remaining Picture of Jenny
     </div>
 </div>
