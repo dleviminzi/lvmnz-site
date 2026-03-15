@@ -20,7 +20,7 @@
   </div>
   <nav class="flex items-center gap-4 text-sm text-muted mt-2 sm:mt-0">
     <a class="text-muted hover:text-text transition-colors" href="/blog/" hx-get="/blog/" hx-target="#content"
-      hx-select="#content" hx-swap="outerHTML" hx-push-url="/blog/">Writing</a>
+      hx-select="#content" hx-swap="outerHTML" hx-push-url="/blog/">Thoughts</a>
     <a class="text-muted hover:text-text transition-colors" href="/photos/" hx-get="/photos/" hx-target="#content"
       hx-select="#content" hx-swap="outerHTML" hx-push-url="/photos/">Photos</a>
   </nav>
@@ -66,7 +66,7 @@
           pi++;
           if (pi >= phrases.length) {
             ci = 0;
-            var end = "~/";
+            var end = ":)";
             function typeEnd() {
               ci++;
               el.textContent = end.slice(0, ci);

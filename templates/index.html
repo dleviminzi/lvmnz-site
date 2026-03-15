@@ -5,7 +5,7 @@
     <div class="mt-8 text-[15px] leading-relaxed text-muted fade-in fade-in-1">
       <p>Software engineer working in New York. Currently at
         <a class="text-text transition-colors" href="https://tennr.com/">Tennr</a>.
-        Here you'll find writing and photos.
+        Here you'll find some thoughts and photos.
       </p>
     </div>
 
@@ -36,7 +36,7 @@
     </section>
 
     <section class="mt-12 fade-in fade-in-3">
-      <h2 class="text-xs font-medium uppercase tracking-wider text-muted mb-4">Writing</h2>
+      <h2 class="text-xs font-medium uppercase tracking-wider text-muted mb-4">Thoughts</h2>
       <div class="space-y-3">
         {{range .Posts}}
         <a href="/blog/{{.LinkTitle}}_{{.Date}}"
@@ -49,7 +49,7 @@
         {{end}}
       </div>
       <a href="/blog/" class="inline-block mt-4 text-sm text-muted hover:text-text transition-colors" hx-get="/blog/"
-        hx-target="#content" hx-select="#content" hx-swap="outerHTML" hx-push-url="/blog/">All writing &rarr;</a>
+        hx-target="#content" hx-select="#content" hx-swap="outerHTML" hx-push-url="/blog/">All thoughts &rarr;</a>
     </section>
 
     <section class="mt-12 fade-in fade-in-4">

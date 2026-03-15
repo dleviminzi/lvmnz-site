@@ -1,8 +1,7 @@
 <div class="space-y-8">
   {{range .Photos}}
   <div>
-    <img src="{{.Source}}" alt="Photo: {{.Name}}" loading="lazy" onclick="openLightbox(this.src, this.alt)"
-      onload="this.classList.add('photo-loaded')"
+    <img src="{{.Source}}" alt="Photo: {{.Name}}" loading="lazy" onload="this.classList.add('photo-loaded')"
       class="max-h-[75vh] w-full object-contain cursor-pointer hover:opacity-90 photo-fade" />
     <p class="text-xs text-muted mt-2 font-mono">{{.Date}}</p>
   </div>
@@ -11,16 +10,40 @@
   {{end}}
 </div>
 
-{{if eq .NextPage -1}}
-<div id="loadMoreBtn" class="flex justify-center mt-8">
-  <span class="text-xs text-muted">That's all for now</span>
-</div>
-{{else}}
-<div id="loadMoreBtn" class="flex justify-center mt-8">
-  <button class="text-sm text-muted hover:text-text border border-border rounded-md px-4 py-2 transition-colors"
-    hx-get="/photos/" hx-vals='{"page": {{.NextPage}}}' hx-swap="outerHTML" hx-target="#loadMoreBtn">Load more</button>
-</div>
-{{end}}
+<nav class="flex items-center justify-center gap-2 mt-10 text-sm font-mono">
+  {{if gt .PrevPage 0}}
+  <a href="/photos/?page=1" class="text-muted hover:text-text transition-colors px-1" hx-get="/photos/?page=1"
+    hx-target="#content" hx-select="#content" hx-swap="outerHTML" hx-push-url="/photos/?page=1">&laquo;</a>
+  <a href="/photos/?page={{.PrevPage}}" class="text-muted hover:text-text transition-colors px-1"
+    hx-get="/photos/?page={{.PrevPage}}" hx-target="#content" hx-select="#content" hx-swap="outerHTML"
+    hx-push-url="/photos/?page={{.PrevPage}}">&lsaquo;</a>
+  {{else}}
+  <span class="text-border px-1">&laquo;</span>
+  <span class="text-border px-1">&lsaquo;</span>
+  {{end}}
+
+  {{range .Pages}}
+  {{if eq . $.Page}}
+  <span class="text-text px-1.5 py-0.5 text-xs">{{.}}</span>
+  {{else}}
+  <a href="/photos/?page={{.}}" class="text-muted hover:text-text transition-colors px-1.5 py-0.5 text-xs"
+    hx-get="/photos/?page={{.}}" hx-target="#content" hx-select="#content" hx-swap="outerHTML"
+    hx-push-url="/photos/?page={{.}}">{{.}}</a>
+  {{end}}
+  {{end}}
+
+  {{if ne .NextPage -1}}
+  <a href="/photos/?page={{.NextPage}}" class="text-muted hover:text-text transition-colors px-1"
+    hx-get="/photos/?page={{.NextPage}}" hx-target="#content" hx-select="#content" hx-swap="outerHTML"
+    hx-push-url="/photos/?page={{.NextPage}}">&rsaquo;</a>
+  <a href="/photos/?page={{.TotalPages}}" class="text-muted hover:text-text transition-colors px-1"
+    hx-get="/photos/?page={{.TotalPages}}" hx-target="#content" hx-select="#content" hx-swap="outerHTML"
+    hx-push-url="/photos/?page={{.TotalPages}}">&raquo;</a>
+  {{else}}
+  <span class="text-border px-1">&rsaquo;</span>
+  <span class="text-border px-1">&raquo;</span>
+  {{end}}
+</nav>
 
 <div id="lightbox" onclick="closeLightbox(event)"
   class="fixed inset-0 z-50 hidden items-center justify-center bg-black/80 backdrop-blur-sm cursor-pointer">
@@ -28,19 +51,53 @@
 </div>
 
 <script>
-  function openLightbox(src, alt) {
+  (function () {
+    var lbPhotos = [];
+    var lbIndex = 0;
     var lb = document.getElementById("lightbox");
-    var img = document.getElementById("lightbox-img");
-    img.src = src;
-    img.alt = alt;
-    lb.classList.remove("hidden");
-    lb.classList.add("flex", "lightbox-open");
-  }
-  function closeLightbox(e) {
-    if (e.target.id === "lightbox") {
-      var lb = document.getElementById("lightbox");
-      lb.classList.add("hidden");
-      lb.classList.remove("flex", "lightbox-open");
+    var lbImg = document.getElementById("lightbox-img");
+
+    var imgs = document.querySelectorAll(".photo-fade");
+    for (var i = 0; i < imgs.length; i++) {
+      (function (idx) {
+        lbPhotos.push({ src: imgs[idx].src, alt: imgs[idx].alt });
+        imgs[idx].addEventListener("click", function () {
+          lbIndex = idx;
+          lbImg.src = lbPhotos[idx].src;
+          lbImg.alt = lbPhotos[idx].alt;
+          lb.classList.remove("hidden");
+          lb.classList.add("flex", "lightbox-open");
+        });
+      })(i);
     }
-  }
+
+    lb.addEventListener("click", function (e) {
+      if (e.target === lb) {
+        lb.classList.add("hidden");
+        lb.classList.remove("flex", "lightbox-open");
+      }
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (lb.classList.contains("hidden")) return;
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        e.stopPropagation();
+        if (lbIndex < lbPhotos.length - 1) {
+          lbIndex++;
+          lbImg.src = lbPhotos[lbIndex].src;
+        }
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        e.stopPropagation();
+        if (lbIndex > 0) {
+          lbIndex--;
+          lbImg.src = lbPhotos[lbIndex].src;
+        }
+      } else if (e.key === "Escape") {
+        lb.classList.add("hidden");
+        lb.classList.remove("flex", "lightbox-open");
+      }
+    });
+  })();
 </script>

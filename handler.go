@@ -164,6 +164,14 @@ func (h Handler) BlogList(w http.ResponseWriter, r *http.Request) {
 	tmpl.ExecuteTemplate(w, "blog.html", pageData)
 }
 
+// Quotes is the handler function for the quotes page.
+func (h Handler) Quotes(w http.ResponseWriter, r *http.Request) {
+	pageData := map[string]any{
+		"ActivePage": BLOG,
+	}
+	tmpl.ExecuteTemplate(w, "quotes.html", pageData)
+}
+
 // Photos is the handler function for the photos page. It returns a paginated list of photos.
 func (h Handler) Photos(w http.ResponseWriter, r *http.Request) {
 	var (
@@ -183,7 +191,6 @@ func (h Handler) Photos(w http.ResponseWriter, r *http.Request) {
 	if page < 1 {
 		page = 1
 	}
-	nextPage = page + 1
 
 	// TODO: switch to using Tigris instead of embedding all the photos
 	res, err := h.tigrisClient.ListObjectsV2(context.TODO(), &s3.ListObjectsV2Input{
@@ -194,10 +201,18 @@ func (h Handler) Photos(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	start := len(res.Contents) - ((page - 1) * PHOTOS_PER_REQUEST) - 1
+	totalPhotos := len(res.Contents)
+	totalPages := (totalPhotos + PHOTOS_PER_REQUEST - 1) / PHOTOS_PER_REQUEST
+	if page > totalPages {
+		page = totalPages
+	}
+
+	start := totalPhotos - ((page - 1) * PHOTOS_PER_REQUEST) - 1
 	end := max(start-PHOTOS_PER_REQUEST, 0)
-	if end == 0 {
-		// indicates that there are no more pages
+
+	prevPage := page - 1
+	nextPage = page + 1
+	if nextPage > totalPages {
 		nextPage = -1
 	}
 
@@ -222,16 +237,24 @@ func (h Handler) Photos(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
+	pages := make([]int, 0)
+	for i := page - 1; i <= page+1; i++ {
+		if i >= 1 && i <= totalPages {
+			pages = append(pages, i)
+		}
+	}
+
 	pageData := map[string]any{
 		"ActivePage": PHOTOS,
 		"Photos":     photos,
+		"Page":       page,
+		"TotalPages": totalPages,
+		"PrevPage":   prevPage,
 		"NextPage":   nextPage,
+		"Pages":      pages,
 	}
 
 	active_tmpl := "photos.html"
-	if page > 1 {
-		active_tmpl = "photos_gallery.html"
-	}
 	err = tmpl.ExecuteTemplate(w, active_tmpl, pageData)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -248,6 +271,7 @@ func setupRoutes() error {
 	http.Handle("/static/", http.StripPrefix("/static", http.FileServer(http.Dir("static"))))
 	http.HandleFunc("/", h.Index)
 	http.HandleFunc("/blog/", h.Blog)
+	http.HandleFunc("/quotes/", h.Quotes)
 	http.HandleFunc("/photos/", h.Photos)
 	return nil
 }

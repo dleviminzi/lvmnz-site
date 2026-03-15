@@ -16,7 +16,17 @@
 {{template "header.html" .}}
 <div id="content">
   <div class="max-w-content mx-auto px-6 pb-16">
-    <h1 class="text-xs font-medium uppercase tracking-wider text-muted mb-6 mt-8 fade-in fade-in-1">Writing</h1>
+    <h1 class="text-xs font-medium uppercase tracking-wider text-muted mb-6 mt-8 fade-in fade-in-1">Thoughts</h1>
+
+    <a href="/quotes/"
+      class="inline-flex items-center text-sm text-muted italic hover:text-text transition-colors mb-6 fade-in fade-in-1"
+      hx-get="/quotes/" hx-swap="outerHTML" hx-target="#content" hx-select="#content" hx-push-url="/quotes/"><svg
+        style="width:14px;height:14px;min-width:14px" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+        stroke-width="1.5">
+        <path stroke-linecap="round" stroke-linejoin="round"
+          d="M16.5 3.75V16.5L12 21l-4.5-4.5V3.75a1.5 1.5 0 011.5-1.5h6a1.5 1.5 0 011.5 1.5z" />
+      </svg>&nbsp;Quotes I Like</a>
+
     <div class="space-y-1 fade-in fade-in-2">
       {{template "Blog" .}}
     </div>

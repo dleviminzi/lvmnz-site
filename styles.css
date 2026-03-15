@@ -75,15 +75,19 @@
 }
 
 
-/* 5. Subtle glow on all link hovers */
-a {
+/* 5. Subtle glow on all link/interactive hovers */
+a, .group span {
   transition: color 0.15s ease, text-shadow 0.25s ease;
 }
-:root a:hover {
-  text-shadow: 0 0 8px rgba(100, 100, 255, 0.3);
+a:hover,
+a:hover span,
+.group:hover span {
+  text-shadow: 0 0 8px rgba(100, 100, 255, 0.2), 0 0 18px rgba(100, 100, 255, 0.08) !important;
 }
-.dark a:hover {
-  text-shadow: 0 0 8px rgba(170, 170, 255, 0.35);
+.dark a:hover,
+.dark a:hover span,
+.dark .group:hover span {
+  text-shadow: 0 0 8px rgba(170, 170, 255, 0.25), 0 0 18px rgba(170, 170, 255, 0.1) !important;
 }
 
 /* 6. Lightbox transitions */

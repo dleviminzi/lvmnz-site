@@ -1,0 +1,46 @@
+{{template "header.html" .}}
+<div id="content">
+  <div class="max-w-content mx-auto px-6 pb-16">
+    <a class="inline-flex items-center gap-1 text-sm text-muted hover:text-text transition-colors mt-6 mb-8 fade-in fade-in-1"
+      href="/blog/" hx-get="/blog/" hx-target="#content" hx-select="#content" hx-swap="outerHTML"
+      hx-push-url="/blog/">&larr; Thoughts</a>
+
+    <h1 class="text-lg font-medium text-text mb-8 fade-in fade-in-1">Quotes I Like</h1>
+
+    <div class="space-y-8 fade-in fade-in-2">
+      <blockquote class="border-l-2 border-border pl-4">
+        <p class="text-sm text-muted italic leading-relaxed">I realized that the search for the Knowledge has encouraged
+          us to think of the House as if it were a sort of riddle to be unravelled, a text to be interpreted, and that
+          if ever we discover the Knowledge, then it will be as if the Value has been wrested from the House and all
+          that remains will be mere scenery.</p>
+        <p class="text-xs text-muted mt-2">— Susanna Clarke, Piranesi</p>
+      </blockquote>
+      <blockquote class="border-l-2 border-border pl-4">
+        <p class="text-sm text-muted italic leading-relaxed">The effect of this cannot be understood without being
+          there. The beauty of it cannot be understood, either, and when you see beauty in desolation it changes
+          something inside you. Desolation tries to colonize you.</p>
+        <p class="text-xs text-muted mt-2">— Jeff VanderMeer, Annihilation</p>
+      </blockquote>
+      <blockquote class="border-l-2 border-border pl-4">
+        <p class="text-sm text-muted italic leading-relaxed">If you have a passion that you want to incorporate into a
+          career, take a step back and recognize the fact that this is a passion that grew in a time of your life when
+          the goal was to learn and to grow, but you are transitioning to a period where the primary aim shifts to
+          adding value to others. The cliche to follow your dreams overlooks how critical it is that the dreams you have
+          are about something more than just yourself.</p>
+        <p class="text-xs text-muted mt-2">— <a
+            class="text-muted hover:text-text transition-colors underline decoration-border"
+            href="https://www.youtube.com/watch?v=W3I3kAg2J7w">Grant Sanderson</a></p>
+      </blockquote>
+      <blockquote class="border-l-2 border-border pl-4">
+        <p class="text-sm text-muted italic leading-relaxed whitespace-pre-line">Tiger got to hunt,
+          Bird got to fly;
+          Man got to sit and wonder, "Why, why, why?"
+          Tiger got to sleep,
+          Bird got to land;
+          Man got to tell himself he understand.</p>
+        <p class="text-xs text-muted mt-2">— Kurt Vonnegut Jr., Cat's Cradle</p>
+      </blockquote>
+    </div>
+  </div>
+</div>
+{{template "footer.html" .}}
