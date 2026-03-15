@@ -1,15 +1,12 @@
 {{define "BlogPost"}}
-<a class="my-4 block py-2 px-4 cursor-pointer no-underline" hx-get="/blog/{{.LinkTitle}}_{{.Date}}" hx-swap="outerHTML"
-  hx-target="#content" hx-push-url="/blog/{{.LinkTitle}}_{{.Date}}">
-  <div class="border-b-2 border-black hover:border-periwinkle hover:text-periwinkle flex justify-between">
-    <span>{{.DisplayTitle}}</span>
-    <span class="hidden lg:inline-block"><span class="rounded px-2 py-1 italic">{{.DisplayDate}}</span></span>
-  </div>
-  <div class="lg:hidden text-left mt-1">
-    <span class="rounded italic">{{.DisplayDate}}</span>
-  </div>
+<a class="group flex items-baseline justify-between py-2.5 border-b border-border no-underline cursor-pointer"
+  hx-get="/blog/{{.LinkTitle}}_{{.Date}}" hx-swap="outerHTML" hx-target="#content" hx-select="#content"
+  hx-push-url="/blog/{{.LinkTitle}}_{{.Date}}">
+  <span class="text-sm text-text group-hover:text-link-hover transition-colors">{{.DisplayTitle}}</span>
+  <span class="text-xs text-muted ml-4 shrink-0 font-mono">{{.DisplayDate}}</span>
 </a>
 {{end}}
+
 {{define "Blog"}}
 {{range .Posts}}
 {{template "BlogPost" .}}
@@ -18,9 +15,11 @@
 
 {{template "header.html" .}}
 <div id="content">
-  {{template "nav.html" .}}
-  <div class="prose lg:prose-base xl:w-[870px] lg:w-[830px] md:w-[700px] w-[90%] mx-auto max-w-none">
-    {{template "Blog" .}}
+  <div class="max-w-content mx-auto px-6 pb-16">
+    <h1 class="text-xs font-medium uppercase tracking-wider text-muted mb-6 mt-8 fade-in fade-in-1">Writing</h1>
+    <div class="space-y-1 fade-in fade-in-2">
+      {{template "Blog" .}}
+    </div>
   </div>
 </div>
 {{template "footer.html" .}}

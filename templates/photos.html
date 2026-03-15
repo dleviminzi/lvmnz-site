@@ -1,6 +1,8 @@
 {{template "header.html" .}}
 <div id="content">
-  {{template "nav.html" .}}
-  {{template "photos_gallery.html" .}}
+  <div class="max-w-content mx-auto px-6 pb-16">
+    <h1 class="text-xs font-medium uppercase tracking-wider text-muted mb-6 mt-8 fade-in fade-in-1">Photos</h1>
+    {{template "photos_gallery.html" .}}
+  </div>
 </div>
 {{template "footer.html" .}}

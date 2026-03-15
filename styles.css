@@ -1,3 +1,123 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    --bg: #fafafa;
+    --text: #111111;
+    --muted: #666666;
+    --border: #e5e5e5;
+    --link: #111111;
+    --link-hover: #000000;
+    --code-bg: #f0f0f0;
+    color-scheme: light;
+  }
+
+  .dark {
+    --bg: #161616;
+    --text: #ededed;
+    --muted: #888888;
+    --border: #222222;
+    --link: #ededed;
+    --link-hover: #ffffff;
+    --code-bg: #1a1a1a;
+    color-scheme: dark;
+  }
+
+  html {
+    font-family: "Geist", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  a {
+    transition: color 0.15s ease;
+  }
+}
+
+/* 1. Staggered fade-in for sections */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  opacity: 0;
+  animation: fadeUp 0.6s ease forwards;
+}
+
+.fade-in-1 { animation-delay: 0.06s; }
+.fade-in-2 { animation-delay: 0.15s; }
+.fade-in-3 { animation-delay: 0.24s; }
+.fade-in-4 { animation-delay: 0.34s; }
+.fade-in-5 { animation-delay: 0.43s; }
+
+/* 3. Theme toggle spin */
+@keyframes spinOnce {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.theme-spin {
+  animation: spinOnce 0.4s ease;
+}
+
+
+/* 5. Subtle glow on all link hovers */
+a {
+  transition: color 0.15s ease, text-shadow 0.25s ease;
+}
+:root a:hover {
+  text-shadow: 0 0 8px rgba(100, 100, 255, 0.3);
+}
+.dark a:hover {
+  text-shadow: 0 0 8px rgba(170, 170, 255, 0.35);
+}
+
+/* 6. Lightbox transitions */
+@keyframes lbFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes lbScaleIn {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+/* Individual photo fade-in on load */
+.photo-fade {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.photo-loaded {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Blinking cursor for typewriter */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.cursor-blink {
+  animation: blink 1s step-end infinite;
+}
+
+.lightbox-open {
+  animation: lbFadeIn 0.2s ease forwards;
+}
+.lightbox-open img {
+  animation: lbScaleIn 0.25s ease forwards;
+}

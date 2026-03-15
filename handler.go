@@ -95,8 +95,24 @@ func newHandler() (*Handler, error) {
 
 // Index is the handler function for the index page.
 func (h Handler) Index(w http.ResponseWriter, r *http.Request) {
+	posts, err := readBlogPostMetadata()
+	if err != nil {
+		slog.Error("reading blog posts for index", "error", err)
+	}
+
+	sort.Slice(posts, func(i, j int) bool {
+		date1, _ := time.Parse("01-02-2006", posts[i].Date)
+		date2, _ := time.Parse("01-02-2006", posts[j].Date)
+		return date1.After(date2)
+	})
+
+	if len(posts) > 3 {
+		posts = posts[:3]
+	}
+
 	pageData := map[string]any{
 		"ActivePage": INDEX,
+		"Posts":      posts,
 	}
 	tmpl.ExecuteTemplate(w, "index.html", pageData)
 }
