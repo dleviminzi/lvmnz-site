@@ -136,6 +136,18 @@ func (h Handler) Blog(w http.ResponseWriter, r *http.Request) {
 	}
 	htmlContent := convertMarkdownToHTML(markdown)
 
+	datePart := ""
+	parts := strings.Split(title, "_")
+	if len(parts) == 2 {
+		datePart = strings.Join(strings.Split(parts[1], "-"), "/")
+	}
+
+	if datePart != "" {
+		dateTag := `<p class="text-xs text-muted font-mono -mt-4 mb-6">` + datePart + `</p>`
+		htmlContent = strings.Replace(htmlContent, "</h1>", "</h1>"+dateTag, 1)
+		htmlContent = strings.Replace(htmlContent, "</h2>", "</h2>"+dateTag, 1)
+	}
+
 	pageData := map[string]any{
 		"ActivePage": BLOG,
 		"Content":    htmlContent,
